@@ -1,1 +1,1130 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Production Hub System — Islam Mutsaev</title>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #03050a;
+  --bg2: #070d18;
+  --surface: #0b1220;
+  --surface2: #0f1a2e;
+  --cyan: #00e5ff;
+  --cyan-dim: rgba(0,229,255,0.15);
+  --cyan-glow: rgba(0,229,255,0.4);
+  --purple: #7b2fff;
+  --purple-dim: rgba(123,47,255,0.15);
+  --orange: #ff6b00;
+  --green: #00ff88;
+  --red: #ff2244;
+  --text: #c8d8e8;
+  --muted: #4a6080;
+  --border: rgba(0,229,255,0.12);
+  --border-hot: rgba(0,229,255,0.4);
+}
 
+* { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior:smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Rajdhani', sans-serif;
+  overflow-x: hidden;
+  cursor: crosshair;
+}
+
+/* SCANLINE OVERLAY */
+body::before {
+  content:'';
+  position:fixed;
+  inset:0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0,0,0,0.08) 2px,
+    rgba(0,0,0,0.08) 4px
+  );
+  pointer-events:none;
+  z-index:9999;
+}
+
+/* NOISE TEXTURE */
+body::after {
+  content:'';
+  position:fixed;
+  inset:0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+  pointer-events:none;
+  z-index:9998;
+  opacity:0.4;
+}
+
+/* CANVAS BACKGROUND */
+#bg-canvas {
+  position:fixed;
+  inset:0;
+  z-index:0;
+  opacity:0.3;
+}
+
+/* NAV */
+nav {
+  position:fixed;
+  top:0; left:0; right:0;
+  z-index:1000;
+  height:56px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:0 2rem;
+  background:rgba(3,5,10,0.85);
+  backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--border);
+}
+
+.nav-id {
+  font-family:'Share Tech Mono', monospace;
+  font-size:0.75rem;
+  color:var(--cyan);
+  letter-spacing:0.15em;
+}
+
+.nav-id span { color:var(--muted); }
+
+.nav-status {
+  display:flex;
+  align-items:center;
+  gap:0.5rem;
+  font-family:'Share Tech Mono', monospace;
+  font-size:0.7rem;
+  color:var(--muted);
+}
+
+.status-dot {
+  width:6px; height:6px;
+  border-radius:50%;
+  background:var(--green);
+  box-shadow:0 0 8px var(--green);
+  animation:pulse-dot 2s ease-in-out infinite;
+}
+
+@keyframes pulse-dot {
+  0%,100% { opacity:1; box-shadow:0 0 8px var(--green); }
+  50% { opacity:0.4; box-shadow:0 0 3px var(--green); }
+}
+
+/* MAIN */
+main { position:relative; z-index:1; }
+
+/* HERO */
+.hero {
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  text-align:center;
+  padding:6rem 2rem 4rem;
+  position:relative;
+}
+
+.hero-eyebrow {
+  font-family:'Share Tech Mono', monospace;
+  font-size:0.7rem;
+  color:var(--muted);
+  letter-spacing:0.3em;
+  text-transform:uppercase;
+  margin-bottom:2rem;
+  opacity:0;
+  animation:fadein 0.8s 0.3s forwards;
+}
+
+.hero-tag {
+  display:inline-block;
+  border:1px solid var(--border-hot);
+  color:var(--cyan);
+  font-family:'Share Tech Mono', monospace;
+  font-size:0.65rem;
+  letter-spacing:0.2em;
+  padding:0.3rem 1rem;
+  margin-bottom:1.5rem;
+  opacity:0;
+  animation:fadein 0.8s 0.5s forwards;
+  position:relative;
+}
+
+.hero-tag::before, .hero-tag::after {
+  content:'';
+  position:absolute;
+  width:6px; height:6px;
+  border:1px solid var(--cyan);
+}
+.hero-tag::before { top:-1px; left:-1px; border-right:none; border-bottom:none; }
+.hero-tag::after { bottom:-1px; right:-1px; border-left:none; border-top:none; }
+
+.hero-title {
+  font-family:'Orbitron', monospace;
+  font-size:clamp(2rem, 6vw, 4.5rem);
+  font-weight:900;
+  line-height:1.1;
+  margin-bottom:0.5rem;
+  opacity:0;
+  animation:fadein 0.8s 0.7s forwards;
+}
+
+.hero-title .line1 { color:#fff; display:block; }
+.hero-title .line2 {
+  display:block;
+  color:transparent;
+  -webkit-text-stroke:1px var(--cyan);
+  text-shadow:0 0 40px var(--cyan-glow);
+}
+
+.hero-subtitle {
+  font-size:1.1rem;
+  color:var(--muted);
+  font-weight:300;
+  letter-spacing:0.1em;
+  margin:1.5rem 0 3rem;
+  max-width:600px;
+  opacity:0;
+  animation:fadein 0.8s 0.9s forwards;
+}
+
+.hero-badges {
+  display:flex;
+  gap:1rem;
+  flex-wrap:wrap;
+  justify-content:center;
+  margin-bottom:4rem;
+  opacity:0;
+  animation:fadein 0.8s 1.1s forwards;
+}
+
+.badge {
+  font-family:'Share Tech Mono', monospace;
+  font-size:0.65rem;
+  letter-spacing:0.15em;
+  padding:0.4rem 1rem;
+  border:1px solid;
+}
+
+.badge-private { border-color:var(--orange); color:var(--orange); background:rgba(255,107,0,0.05); }
+.badge-active { border-color:var(--green); color:var(--green); background:rgba(0,255,136,0.05); }
+.badge-solo { border-color:var(--purple); color:var(--purple); background:rgba(123,47,255,0.05); }
+
+.hero-scroll {
+  position:absolute;
+  bottom:2rem;
+  left:50%;
+  transform:translateX(-50%);
+  font-family:'Share Tech Mono', monospace;
+  font-size:0.6rem;
+  color:var(--muted);
+  letter-spacing:0.2em;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:0.5rem;
+  animation:bounce 2s ease-in-out infinite;
+  opacity:0;
+  animation:fadein 1s 1.5s forwards, bounce 2s 2.5s ease-in-out infinite;
+}
+
+.hero-scroll-line {
+  width:1px;
+  height:40px;
+  background:linear-gradient(to bottom, var(--cyan), transparent);
+}
+
+@keyframes bounce {
+  0%,100% { transform:translateX(-50%) translateY(0); }
+  50% { transform:translateX(-50%) translateY(6px); }
+}
+
+@keyframes fadein {
+  from { opacity:0; transform:translateY(16px); }
+  to { opacity:1; transform:translateY(0); }
+}
+
+/* SECTION BASE */
+section {
+  padding:6rem 2rem;
+  max-width:1100px;
+  margin:0 auto;
+}
+
+.section-label {
+  font-family:'Share Tech Mono', monospace;
+  font-size:0.65rem;
+  color:var(--cyan);
+  letter-spacing:0.3em;
+  text-transform:uppercase;
+  margin-bottom:0.75rem;
+  display:flex;
+  align-items:center;
+  gap:0.75rem;
+}
+
+.section-label::before {
+  content:'';
+  width:24px; height:1px;
+  background:var(--cyan);
+}
+
+.section-title {
+  font-family:'Orbitron', monospace;
+  font-size:clamp(1.5rem, 3vw, 2.5rem);
+  font-weight:700;
+  color:#fff;
+  margin-bottom:3rem;
+}
+
+/* DIVIDER */
+.divider {
+  width:100%;
+  height:1px;
+  background:linear-gradient(to right, transparent, var(--border-hot), transparent);
+  margin:0 auto;
+}
+
+/* PROBLEM SECTION */
+.problem-grid {
+  display:grid;
+  grid-template-columns:repeat(auto-fit, minmax(280px, 1fr));
+  gap:1.5rem;
+  margin-bottom:3rem;
+}
+
+.problem-card {
+  background:var(--surface);
+  border:1px solid var(--border);
+  padding:2rem;
+  position:relative;
+  transition:border-color 0.3s, transform 0.3s;
+}
+
+.problem-card:hover {
+  border-color:var(--border-hot);
+  transform:translateY(-4px);
+}
+
+.problem-card::before {
+  content:attr(data-num);
+  position:absolute;
+  top:1rem; right:1.5rem;
+  font-family:'Share Tech Mono', monospace;
+  font-size:0.65rem;
+  color:var(--muted);
+}
+
+.problem-icon {
+  font-size:1.5rem;
+  margin-bottom:1rem;
+}
+
+.problem-card h3 {
+  font-family:'Orbitron', monospace;
+  font-size:0.85rem;
+  color:var(--cyan);
+  letter-spacing:0.1em;
+  margin-bottom:0.75rem;
+}
+
+.problem-card p {
+  font-size:0.95rem;
+  color:var(--muted);
+  line-height:1.7;
+  font-weight:300;
+}
+
+/* SOLUTION */
+.solution-block {
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-left:3px solid var(--cyan);
+  padding:2.5rem;
+  margin-bottom:2rem;
+  position:relative;
+  overflow:hidden;
+}
+
+.solution-block::after {
+  content:'LÖSUNG';
+  position:absolute;
+  top:1rem; right:1.5rem;
+  font-family:'Share Tech Mono', monospace;
+  font-size:0.6rem;
+  color:var(--border-hot);
+  letter-spacing:0.2em;
+}
+
+.solution-block p {
+  font-size:1.15rem;
+  line-height:1.8;
+  font-weight:400;
+  color:var(--text);
+}
+
+.solution-block strong { color:var(--cyan); font-weight:600; }
+
+/* ARCHITECTURE */
+.arch-diagram {
+  background:var(--surface);
+  border:1px solid var(--border);
+  padding:3rem 2rem;
+  margin-bottom:2rem;
+  position:relative;
+}
+
+.arch-title {
+  font-family:'Share Tech Mono', monospace;
+  font-size:0.65rem;
+  color:var(--muted);
+  letter-spacing:0.2em;
+  text-align:center;
+  margin-bottom:3rem;
+}
+
+.arch-flow {
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:0;
+  flex-wrap:wrap;
+  row-gap:2rem;
+}
+
+.arch-node {
+  background:var(--bg2);
+  border:1px solid var(--border);
+  padding:1rem 1.25rem;
+  text-align:center;
+  min-width:110px;
+  position:relative;
+  transition:border-color 0.3s;
+}
+
+.arch-node:hover { border-color:var(--border-hot); }
+
+.arch-node-icon { font-size:1.25rem; margin-bottom:0.4rem; display:block; }
+
+.arch-node-label {
+  font-family:'Share Tech Mono', monospace;
+  font-size:0.6rem;
+  color:var(--cyan);
+  letter-spacing:0.1em;
+  display:block;
+  margin-bottom:0.2rem;
+}
+
+.arch-node-sub {
+  font-size:0.7rem;
+  color:var(--muted);
+  display:block;
+}
+
+.arch-arrow {
+  width:40px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:var(--muted);
+  font-size:1rem;
+  flex-shrink:0;
+}
+
+.arch-arrow-down {
+  width:100%;
+  display:flex;
+  justify-content:center;
+  color:var(--muted);
+  font-size:1.2rem;
+  margin:0.5rem 0;
+}
+
+/* STATS */
+.stats-row {
+  display:grid;
+  grid-template-columns:repeat(auto-fit, minmax(180px, 1fr));
+  gap:1px;
+  background:var(--border);
+  border:1px solid var(--border);
+  margin-bottom:3rem;
+}
+
+.stat-item {
+  background:var(--surface);
+  padding:2rem;
+  text-align:center;
+}
+
+.stat-num {
+  font-family:'Orbitron', monospace;
+  font-size:2.5rem;
+  font-weight:900;
+  color:var(--cyan);
+  text-shadow:0 0 20px var(--cyan-glow);
+  display:block;
+  line-height:1;
+  margin-bottom:0.5rem;
+}
+
+.stat-label {
+  font-family:'Share Tech Mono', monospace;
+  font-size:0.65rem;
+  color:var(--muted);
+  letter-spacing:0.15em;
+}
+
+/* STACK */
+.stack-grid {
+  display:grid;
+  grid-template-columns:repeat(auto-fit, minmax(240px, 1fr));
+  gap:1.5rem;
+}
+
+.stack-group {
+  background:var(--surface);
+  border:1px solid var(--border);
+  padding:1.75rem;
+  transition:border-color 0.3s;
+}
+
+.stack-group:hover { border-color:var(--border-hot); }
+
+.stack-group-title {
+  font-family:'Share Tech Mono', monospace;
+  font-size:0.65rem;
+  color:var(--cyan);
+  letter-spacing:0.2em;
+  margin-bottom:1.25rem;
+  padding-bottom:0.75rem;
+  border-bottom:1px solid var(--border);
+}
+
+.stack-tags {
+  display:flex;
+  flex-wrap:wrap;
+  gap:0.5rem;
+}
+
+.stack-tag {
+  font-family:'Share Tech Mono', monospace;
+  font-size:0.65rem;
+  color:var(--text);
+  background:var(--bg2);
+  border:1px solid var(--border);
+  padding:0.3rem 0.75rem;
+  letter-spacing:0.05em;
+  transition:all 0.2s;
+}
+
+.stack-tag:hover {
+  border-color:var(--cyan);
+  color:var(--cyan);
+  background:var(--cyan-dim);
+}
+
+/* TIMELINE */
+.timeline {
+  position:relative;
+  padding-left:2rem;
+}
+
+.timeline::before {
+  content:'';
+  position:absolute;
+  left:0; top:0; bottom:0;
+  width:1px;
+  background:linear-gradient(to bottom, var(--cyan), var(--purple), transparent);
+}
+
+.timeline-item {
+  position:relative;
+  padding:0 0 3rem 2rem;
+}
+
+.timeline-item::before {
+  content:'';
+  position:absolute;
+  left:-5px; top:4px;
+  width:9px; height:9px;
+  border:1px solid var(--cyan);
+  background:var(--bg);
+  transform:rotate(45deg);
+}
+
+.timeline-date {
+  font-family:'Share Tech Mono', monospace;
+  font-size:0.65rem;
+  color:var(--cyan);
+  letter-spacing:0.15em;
+  margin-bottom:0.5rem;
+}
+
+.timeline-role {
+  font-family:'Orbitron', monospace;
+  font-size:1rem;
+  font-weight:700;
+  color:#fff;
+  margin-bottom:0.25rem;
+}
+
+.timeline-company {
+  font-size:0.85rem;
+  color:var(--muted);
+  margin-bottom:0.75rem;
+  font-weight:300;
+}
+
+.timeline-desc {
+  font-size:0.95rem;
+  color:var(--text);
+  line-height:1.7;
+  font-weight:300;
+}
+
+/* FOUNDER */
+.founder-block {
+  display:grid;
+  grid-template-columns:auto 1fr;
+  gap:3rem;
+  align-items:start;
+  background:var(--surface);
+  border:1px solid var(--border);
+  padding:3rem;
+}
+
+.founder-avatar {
+  width:80px; height:80px;
+  border:1px solid var(--border-hot);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-family:'Orbitron', monospace;
+  font-size:1.5rem;
+  font-weight:900;
+  color:var(--cyan);
+  background:var(--cyan-dim);
+  flex-shrink:0;
+}
+
+.founder-name {
+  font-family:'Orbitron', monospace;
+  font-size:1.25rem;
+  font-weight:700;
+  color:#fff;
+  margin-bottom:0.25rem;
+}
+
+.founder-title {
+  font-family:'Share Tech Mono', monospace;
+  font-size:0.65rem;
+  color:var(--cyan);
+  letter-spacing:0.2em;
+  margin-bottom:1rem;
+}
+
+.founder-bio {
+  font-size:1rem;
+  color:var(--muted);
+  line-height:1.8;
+  font-weight:300;
+  margin-bottom:1.5rem;
+}
+
+.founder-links {
+  display:flex;
+  gap:1rem;
+  flex-wrap:wrap;
+}
+
+.founder-link {
+  font-family:'Share Tech Mono', monospace;
+  font-size:0.65rem;
+  color:var(--text);
+  text-decoration:none;
+  border:1px solid var(--border);
+  padding:0.4rem 1rem;
+  letter-spacing:0.1em;
+  transition:all 0.2s;
+}
+
+.founder-link:hover {
+  border-color:var(--cyan);
+  color:var(--cyan);
+  background:var(--cyan-dim);
+}
+
+/* CTA */
+.cta-block {
+  text-align:center;
+  padding:6rem 2rem;
+  border-top:1px solid var(--border);
+  position:relative;
+}
+
+.cta-block::before {
+  content:'';
+  position:absolute;
+  top:0; left:50%; transform:translateX(-50%);
+  width:200px; height:1px;
+  background:linear-gradient(to right, transparent, var(--cyan), transparent);
+}
+
+.cta-label {
+  font-family:'Share Tech Mono', monospace;
+  font-size:0.65rem;
+  color:var(--muted);
+  letter-spacing:0.3em;
+  margin-bottom:1.5rem;
+}
+
+.cta-title {
+  font-family:'Orbitron', monospace;
+  font-size:clamp(1.25rem, 3vw, 2rem);
+  font-weight:700;
+  color:#fff;
+  margin-bottom:1rem;
+  line-height:1.3;
+}
+
+.cta-sub {
+  font-size:1rem;
+  color:var(--muted);
+  margin-bottom:2.5rem;
+  font-weight:300;
+}
+
+.cta-btn {
+  display:inline-block;
+  font-family:'Share Tech Mono', monospace;
+  font-size:0.75rem;
+  letter-spacing:0.2em;
+  color:var(--bg);
+  background:var(--cyan);
+  border:none;
+  padding:1rem 2.5rem;
+  text-decoration:none;
+  cursor:pointer;
+  transition:all 0.2s;
+  clip-path:polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%);
+}
+
+.cta-btn:hover {
+  background:#fff;
+  box-shadow:0 0 30px var(--cyan-glow);
+}
+
+/* FOOTER */
+footer {
+  border-top:1px solid var(--border);
+  padding:2rem;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  flex-wrap:wrap;
+  gap:1rem;
+  position:relative;
+  z-index:1;
+}
+
+.footer-id {
+  font-family:'Share Tech Mono', monospace;
+  font-size:0.65rem;
+  color:var(--muted);
+  letter-spacing:0.1em;
+}
+
+.footer-copy {
+  font-family:'Share Tech Mono', monospace;
+  font-size:0.6rem;
+  color:var(--muted);
+  letter-spacing:0.1em;
+}
+
+/* SCROLL REVEAL */
+.reveal {
+  opacity:0;
+  transform:translateY(24px);
+  transition:opacity 0.7s, transform 0.7s;
+}
+.reveal.visible {
+  opacity:1;
+  transform:translateY(0);
+}
+
+/* RESPONSIVE */
+@media(max-width:640px) {
+  .founder-block { grid-template-columns:1fr; }
+  .arch-flow { flex-direction:column; }
+  .arch-arrow { transform:rotate(90deg); }
+}
+</style>
+</head>
+<body>
+
+<canvas id="bg-canvas"></canvas>
+
+<nav>
+  <div class="nav-id"><span>SYS://</span>PRODUCTION_HUB_SYSTEM<span>/v1.0</span></div>
+  <div class="nav-status">
+    <div class="status-dot"></div>
+    IN ENTWICKLUNG
+  </div>
+</nav>
+
+<main>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-eyebrow">PROJECT DOCUMENTATION // NORTH GERMANY</div>
+  <div class="hero-tag">DECENTRALIZED MANUFACTURING INTELLIGENCE</div>
+  <h1 class="hero-title">
+    <span class="line1">PRODUCTION</span>
+    <span class="line2">HUB SYSTEM</span>
+  </h1>
+  <p class="hero-subtitle">
+    KI-gesteuerte Orchestrierung verteilter Fertigungsnetzwerke.<br>
+    Ein Auftrag. Viele Hubs. Automatische Intelligenz.
+  </p>
+  <div class="hero-badges">
+    <span class="badge badge-private">🔒 PRIVAT / CLOSED SOURCE</span>
+    <span class="badge badge-active">⚡ AKTIVE ENTWICKLUNG</span>
+    <span class="badge badge-solo">◈ SOLO PROJECT</span>
+  </div>
+  <div class="hero-scroll">
+    <span>SCROLL</span>
+    <div class="hero-scroll-line"></div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- PROBLEM -->
+<section class="reveal">
+  <div class="section-label">01 — PROBLEM</div>
+  <h2 class="section-title">Was heute kaputt ist</h2>
+  <div class="problem-grid">
+    <div class="problem-card" data-num="001">
+      <div class="problem-icon">🏭</div>
+      <h3>VERTEILTE PRODUKTION</h3>
+      <p>Spezialisierte Fertigungshubs existieren — aber niemand weiß in Echtzeit, wer was kann, wer verfügbar ist und wer die beste Qualität liefert.</p>
+    </div>
+    <div class="problem-card" data-num="002">
+      <div class="problem-icon">📋</div>
+      <h3>MANUELLE KOORDINATION</h3>
+      <p>Auftragsverteilung läuft über Telefon, E-Mail und Tabellen. Fehler, Verzögerungen und Engpässe sind keine Ausnahme — sie sind der Standard.</p>
+    </div>
+    <div class="problem-card" data-num="003">
+      <div class="problem-icon">📊</div>
+      <h3>NULL TRANSPARENZ</h3>
+      <p>Wer hat Kapazität? Wer hat das nötige Equipment? Wer hat letzten Monat die beste Qualität geliefert? Niemand weiß es — bis es zu spät ist.</p>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- SOLUTION -->
+<section class="reveal">
+  <div class="section-label">02 — LÖSUNG</div>
+  <h2 class="section-title">Wie das System denkt</h2>
+  <div class="solution-block">
+    <p>
+      Jedes Produkt wird in <strong>standardisierte Module</strong> zerlegt — Zuschnitt, Nähte, Taschen, Finish.
+      Jeder Hub im Netzwerk hat ein Profil: Equipment, Skill-Level, aktuelle Kapazität, Qualitätsindex.
+      Das System <strong>bewertet jeden Hub für jedes Modul automatisch</strong> und verteilt den Auftrag
+      so, dass Qualität, Verfügbarkeit und Skills optimal zusammenpassen.
+      Kein Projektmanager. Kein Telefon. <strong>Nur Logik.</strong>
+    </p>
+  </div>
+
+  <!-- ARCHITECTURE DIAGRAM -->
+  <div class="arch-diagram">
+    <div class="arch-title">// SYSTEM ARCHITEKTUR — VEREINFACHT //</div>
+    <div class="arch-flow">
+      <div class="arch-node">
+        <span class="arch-node-icon">📥</span>
+        <span class="arch-node-label">AUFTRAG</span>
+        <span class="arch-node-sub">Eingang</span>
+      </div>
+      <div class="arch-arrow">→</div>
+      <div class="arch-node">
+        <span class="arch-node-icon">⚙️</span>
+        <span class="arch-node-label">MODUL-ENGINE</span>
+        <span class="arch-node-sub">Zerlegung</span>
+      </div>
+      <div class="arch-arrow">→</div>
+      <div class="arch-node">
+        <span class="arch-node-icon">🧠</span>
+        <span class="arch-node-label">KI-SCORING</span>
+        <span class="arch-node-sub">Bewertung</span>
+      </div>
+      <div class="arch-arrow">→</div>
+      <div class="arch-node">
+        <span class="arch-node-icon">🏭</span>
+        <span class="arch-node-label">HUB-ZUWEISUNG</span>
+        <span class="arch-node-sub">Automatisch</span>
+      </div>
+      <div class="arch-arrow">→</div>
+      <div class="arch-node">
+        <span class="arch-node-icon">📊</span>
+        <span class="arch-node-label">TRACKING</span>
+        <span class="arch-node-sub">Echtzeit</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCORING FORMULA -->
+  <div class="solution-block" style="font-family:'Share Tech Mono',monospace; font-size:0.85rem; line-height:2;">
+    <span style="color:var(--muted); font-size:0.65rem; letter-spacing:0.2em; display:block; margin-bottom:1rem;">// SCORING-ALGORITHMUS</span>
+    <span style="color:var(--cyan);">score</span>
+    <span style="color:var(--muted);"> = </span>
+    <span style="color:#fff;">(quality_index</span>
+    <span style="color:var(--purple);"> × 0.40</span><span style="color:#fff;">)</span>
+    <span style="color:var(--muted);"> + </span>
+    <span style="color:#fff;">(availability_ratio</span>
+    <span style="color:var(--purple);"> × 0.35</span><span style="color:#fff;">)</span>
+    <span style="color:var(--muted);"> + </span>
+    <span style="color:#fff;">(skill_match</span>
+    <span style="color:var(--purple);"> × 0.25</span><span style="color:#fff;">)</span>
+    <br>
+    <span style="color:var(--muted); font-size:0.7rem;">// Engpässe werden erkannt und gemeldet — kein stilles Versagen</span>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- STATS -->
+<section class="reveal">
+  <div class="section-label">03 — STATUS</div>
+  <h2 class="section-title">Aktueller Stand</h2>
+  <div class="stats-row">
+    <div class="stat-item">
+      <span class="stat-num">24</span>
+      <span class="stat-label">ENTWICKLUNGS-PROMPTS</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-num">2</span>
+      <span class="stat-label">ENTWICKLUNGSPHASEN</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-num">~6W</span>
+      <span class="stat-label">BIS MVP</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-num">1</span>
+      <span class="stat-label">ENTWICKLER</span>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- STACK -->
+<section class="reveal">
+  <div class="section-label">04 — TECHNOLOGIE</div>
+  <h2 class="section-title">Tech Stack</h2>
+  <div class="stack-grid">
+    <div class="stack-group">
+      <div class="stack-group-title">// DATENBANK</div>
+      <div class="stack-tags">
+        <span class="stack-tag">PostgreSQL</span>
+        <span class="stack-tag">SQLAlchemy</span>
+        <span class="stack-tag">asyncpg</span>
+      </div>
+    </div>
+    <div class="stack-group">
+      <div class="stack-group-title">// BACKEND API</div>
+      <div class="stack-tags">
+        <span class="stack-tag">FastAPI</span>
+        <span class="stack-tag">Python</span>
+        <span class="stack-tag">REST</span>
+        <span class="stack-tag">JWT Auth</span>
+      </div>
+    </div>
+    <div class="stack-group">
+      <div class="stack-group-title">// AUTOMATISIERUNG</div>
+      <div class="stack-tags">
+        <span class="stack-tag">n8n</span>
+        <span class="stack-tag">Webhooks</span>
+        <span class="stack-tag">Telegram Bot</span>
+      </div>
+    </div>
+    <div class="stack-group">
+      <div class="stack-group-title">// DASHBOARD</div>
+      <div class="stack-tags">
+        <span class="stack-tag">Retool</span>
+        <span class="stack-tag">Kanban</span>
+        <span class="stack-tag">Echtzeit-KPIs</span>
+      </div>
+    </div>
+    <div class="stack-group">
+      <div class="stack-group-title">// INFRASTRUKTUR</div>
+      <div class="stack-tags">
+        <span class="stack-tag">Docker</span>
+        <span class="stack-tag">Railway</span>
+        <span class="stack-tag">AWS</span>
+      </div>
+    </div>
+    <div class="stack-group">
+      <div class="stack-group-title">// KI-LAYER</div>
+      <div class="stack-tags">
+        <span class="stack-tag">Claude Code</span>
+        <span class="stack-tag">LLM Guardrails</span>
+        <span class="stack-tag">Prompt Engineering</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- FOUNDER -->
+<section class="reveal">
+  <div class="section-label">05 — GRÜNDER</div>
+  <h2 class="section-title">Wer dahinter steckt</h2>
+  <div class="founder-block">
+    <div class="founder-avatar">IM</div>
+    <div>
+      <div class="founder-name">Islam Mutsaev</div>
+      <div class="founder-title">AI INTEGRATOR // SOLO DEVELOPER // NORTH GERMANY</div>
+      <p class="founder-bio">
+        IT-Sysadmin. CNC-Fertiger. KI-Integrator. In dieser Reihenfolge.<br>
+        Ich baue dieses System allein — mit Claude Code als täglichem Werkzeug.
+        Was normalerweise ein Team braucht, erledige ich über durchdachte Architektur
+        und konsequente Automatisierung. Aufgewachsen in Tschetschenien, gelandet
+        in Norddeutschland. Der Nebel hier hilft beim Denken.
+      </p>
+      <div class="founder-links">
+        <a href="https://www.linkedin.com/in/islam-mutsaev-3b083a3b1/" class="founder-link" target="_blank">[in] LinkedIn</a>
+        <a href="https://github.com/marasaget-arch" class="founder-link" target="_blank">[gh] GitHub</a>
+        <a href="https://marasaget-arch.github.io" class="founder-link" target="_blank">[web] Portfolio</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- CTA -->
+<div class="cta-block reveal">
+  <div class="cta-label">// KONTAKT //</div>
+  <h2 class="cta-title">Interesse? Fragen? Kooperation?</h2>
+  <p class="cta-sub">Das Projekt ist in aktiver Entwicklung. Quelltexte sind nicht öffentlich.</p>
+  <a href="https://www.linkedin.com/in/islam-mutsaev-3b083a3b1/" class="cta-btn" target="_blank">KONTAKT AUFNEHMEN</a>
+</div>
+
+</main>
+
+<footer>
+  <div class="footer-id">PRODUCTION_HUB_SYSTEM // © 2025 ISLAM MUTSAEV</div>
+  <div class="footer-copy">ALLE RECHTE VORBEHALTEN // CLOSED SOURCE</div>
+</footer>
+
+<script>
+// CANVAS BACKGROUND — CIRCUIT LINES
+const canvas = document.getElementById('bg-canvas');
+const ctx = canvas.getContext('2d');
+
+function resize() {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+}
+resize();
+window.addEventListener('resize', resize);
+
+const particles = [];
+for(let i = 0; i < 60; i++) {
+  particles.push({
+    x: Math.random() * window.innerWidth,
+    y: Math.random() * window.innerHeight,
+    vx: (Math.random() - 0.5) * 0.3,
+    vy: (Math.random() - 0.5) * 0.3,
+    size: Math.random() * 1.5 + 0.5,
+    opacity: Math.random() * 0.5 + 0.1
+  });
+}
+
+function drawCanvas() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  // connections
+  for(let i = 0; i < particles.length; i++) {
+    for(let j = i+1; j < particles.length; j++) {
+      const dx = particles[i].x - particles[j].x;
+      const dy = particles[i].y - particles[j].y;
+      const dist = Math.sqrt(dx*dx + dy*dy);
+      if(dist < 150) {
+        ctx.beginPath();
+        ctx.strokeStyle = `rgba(0,229,255,${(1 - dist/150) * 0.12})`;
+        ctx.lineWidth = 0.5;
+        ctx.moveTo(particles[i].x, particles[i].y);
+        ctx.lineTo(particles[j].x, particles[j].y);
+        ctx.stroke();
+      }
+    }
+  }
+
+  // dots
+  particles.forEach(p => {
+    p.x += p.vx;
+    p.y += p.vy;
+    if(p.x < 0) p.x = canvas.width;
+    if(p.x > canvas.width) p.x = 0;
+    if(p.y < 0) p.y = canvas.height;
+    if(p.y > canvas.height) p.y = 0;
+
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, p.size, 0, Math.PI*2);
+    ctx.fillStyle = `rgba(0,229,255,${p.opacity})`;
+    ctx.fill();
+  });
+
+  requestAnimationFrame(drawCanvas);
+}
+drawCanvas();
+
+// SCROLL REVEAL
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if(e.isIntersecting) e.target.classList.add('visible');
+  });
+}, { threshold: 0.1 });
+
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+// STAT COUNTER ANIMATION
+function animateStats() {
+  document.querySelectorAll('.stat-num').forEach(el => {
+    const target = el.textContent;
+    const num = parseInt(target);
+    if(isNaN(num)) return;
+    let current = 0;
+    const step = Math.ceil(num / 30);
+    const interval = setInterval(() => {
+      current = Math.min(current + step, num);
+      el.textContent = target.replace(num, current);
+      if(current >= num) clearInterval(interval);
+    }, 40);
+  });
+}
+
+const statsObserver = new IntersectionObserver(entries => {
+  if(entries[0].isIntersecting) {
+    animateStats();
+    statsObserver.disconnect();
+  }
+}, { threshold: 0.5 });
+
+const statsEl = document.querySelector('.stats-row');
+if(statsEl) statsObserver.observe(statsEl);
+</script>
+</body>
+</html>
