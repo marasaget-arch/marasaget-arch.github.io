@@ -1,49 +1,55 @@
-# Islam Mutsaev
+# Hey, ich bin Islam 👋
 
-Ich baue Systeme — alleine, von Anfang bis Ende.
+Ich baue Systeme — alleine, von Grund auf, mit echtem Code.
 
-Kein Team, kein Auftraggeber. Nur ich, ein Terminal und Claude Code als Werkzeug.
-Mein Fokus liegt auf dem, was tatsächlich funktioniert: Agentic Workflows, die Aufgaben selbstständig erledigen, APIs die miteinander reden, und Backends die nicht zusammenbrechen wenn es drauf ankommt.
-
----
-
-### Was ich gerade baue
-
-Ein System zur Steuerung dezentraler Produktionsnetzwerke.  
-Ein Auftrag kommt rein → wird in Module zerlegt → an spezialisierte Hubs verteilt → automatisch koordiniert.
-
-Kein Klickibunti. Reine Logik.
-
-> Privat in Entwicklung — MVP läuft.
+Mein Werkzeug der Wahl ist **Claude Code**. Nicht als Abkürzung,
+sondern als Multiplier: Ich denke die Architektur, definiere die Logik,
+treffe alle Entscheidungen — Claude Code hilft mir, das schneller in
+funktionierenden Code zu übersetzen. Das Ergebnis ist trotzdem meins.
 
 ---
 
-### Womit ich arbeite
+## Was ich gerade baue
+
+Ein System zur **Orchestrierung dezentraler Produktionsnetzwerke**.
+
+Die Idee: Ein Produkt wird in Standardmodule zerlegt. Ein Netzwerk aus
+unabhängigen Hubs — jedes mit eigenem Equipment und eigenen Skills —
+übernimmt die Fertigung. Das System verteilt, priorisiert, trackt
+Kapazitäten und meldet Engpässe. Automatisch.
+
+> Alleinentwicklung. Aktuell im MVP-Stadium. Code ist privat.
+
+---
+
+## Stack
 
 ```
-Automatisierung      n8n · Claude Code · LLM APIs · Prompt Engineering
-Backend              Node.js · FastAPI · PostgreSQL · REST APIs
-Frontend             Vanilla JS · CSS Architecture · Web Security
-Infrastruktur        Docker · Railway · Google Workspace · Telegram Bot API
+Automatisierung    →  n8n · Agentic Workflows · LLM Guardrails
+Backend / API      →  Node.js · FastAPI · PostgreSQL · REST
+Frontend           →  Vanilla JS · moderne CSS-Architektur
+Infra              →  Docker · Railway
+Integrationen      →  Google Workspace · Telegram Bot API · Retool
+KI-Layer           →  Claude Code · Gemini API · Prompt Engineering
 ```
 
 ---
 
-### Wie ich arbeite
+## Hintergrund
 
-Ich schreibe keinen Code um Code zu schreiben.  
-Jedes Modul hat einen Zweck. Jede Session hat ein Ziel.  
-Wenn etwas zu komplex wird — zerlege ich es, bis es einfach ist.
+Ich komme nicht aus der klassischen Softwareentwicklung.
 
-Das hab ich von der Systemadministration mitgenommen. Und vom CNC-Fräsen. Und vom kompetitiven Gaming.  
-Hartnäckigkeit beim Debugging ist keine Fähigkeit — es ist eine Gewohnheit.
+IT-Systemadministration → CNC-Fertigung → AI Integrator.
+
+Dieser Weg hat mir eines beigebracht: Probleme lösen, nicht beschreiben.
+Wenn etwas nicht funktioniert, debugge ich — nicht theoretisiere ich.
 
 ---
 
-### Wo ich herkomme
+## Offen für
 
-`IT-Systemadministrator` → `CNC-Fertigung` → `AI Integrator`
+Remote-Rollen als **AI Integrator**, **Automation Engineer** oder
+**Full-Stack Developer** — überall dort, wo Systeme gebaut und
+Prozesse messbar beschleunigt werden sollen.
 
-📍 Deutschland · Remote · Offen für Projekte als AI Integrator / Automation Engineer
-
-[![LinkedIn](https://img.shields.io/badge/LinkedIn-Islam_Mutsaev-0077B5?style=flat&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/islam-mutsaev-3b083a3b1/)
+📍 Deutschland &nbsp;·&nbsp; [LinkedIn](https://www.linkedin.com/in/islam-mutsaev-3b083a3b1/)
