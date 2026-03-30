@@ -1,19 +1,66 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
+<!-- ============================================
+     META & SECURITY HEADERS
+     ============================================ -->
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="description" content="Islam Mutsaev — AI Integrator, Automation Engineer, Solo Developer aus Norddeutschland. Cyberpunk-Portfolio.">
 <meta name="author" content="Islam Mutsaev">
+
+<!-- CSP - Content Security Policy -->
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self';">
+<!-- X-Content-Type-Options -->
+<meta http-equiv="X-Content-Type-Options" content="nosniff">
+<!-- X-Frame-Options (Fallback für ältere Browser, primär via CSP/Frame-Busting) -->
+<meta http-equiv="X-Frame-Options" content="DENY">
+<!-- Referrer Policy -->
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<!-- CSRF Token (Vorbereitet für zukünftige Formulare) -->
+<meta name="csrf-token" content="v1_dummy_token_replace_in_production">
+
 <title>ISLAM MUTSAEV // AI INTEGRATOR</title>
+
+<!-- ============================================
+     CLICKJACKING-SCHUTZ (FRAME-BUSTING)
+     ============================================ -->
+<style id="antiClickjack">body{display:none !important;}</style>
+<script>
+  if (self === top) {
+    var antiClickjack = document.getElementById("antiClickjack");
+    antiClickjack.parentNode.removeChild(antiClickjack);
+  } else {
+    top.location = self.location;
+  }
+</script>
+
+<!-- ============================================
+     POLYFILLS (Für ältere Browser)
+     ============================================ -->
+<!-- Lädt Polyfills nur, wenn ES6-Module nicht unterstützt werden -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/core-js/3.33.0/minified.js" nomodule></script>
+
+<!-- ============================================
+     FONTS
+     ============================================ -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&display=swap" rel="stylesheet">
+
+<!-- ============================================
+     STYLES (Vendor-Prefixes, Fallbacks, BEM-ready)
+     ============================================ -->
 <style>
 /* ============================================
    RESET & BASE
    ============================================ */
-*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+*, *::before, *::after { 
+  margin: 0; 
+  padding: 0; 
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box; 
+}
 
 :root {
   --bg: #0a0a0f;
@@ -41,7 +88,8 @@ html {
 }
 
 body {
-  font-family: 'JetBrains Mono', monospace;
+  /* Fallback Font */
+  font-family: 'JetBrains Mono', 'Courier New', Courier, monospace;
   background: var(--bg);
   color: var(--text);
   line-height: 1.7;
@@ -49,7 +97,7 @@ body {
   position: relative;
 }
 
-/* Scrollbar */
+/* Scrollbar Webkit */
 ::-webkit-scrollbar { width: 6px; }
 ::-webkit-scrollbar-track { background: var(--bg); }
 ::-webkit-scrollbar-thumb { background: var(--cyan); border-radius: 3px; }
@@ -64,6 +112,13 @@ body::after {
   width: 100%; height: 100%;
   pointer-events: none;
   z-index: 9999;
+  background: -webkit-repeating-linear-gradient(
+    bottom,
+    transparent,
+    transparent 2px,
+    var(--scanline) 2px,
+    var(--scanline) 4px
+  );
   background: repeating-linear-gradient(
     0deg,
     transparent,
@@ -92,11 +147,19 @@ nav {
   top: 0; left: 0; right: 0;
   z-index: 1000;
   background: rgba(10, 10, 15, 0.9);
+  /* Vendor Prefix für Backdrop-Filter */
+  -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
   border-bottom: 1px solid var(--border);
   padding: 0 2rem;
+  display: -webkit-box;
+  display: -ms-flexbox;
   display: flex;
+  -webkit-box-pack: justify;
+  -ms-flex-pack: justify;
   justify-content: space-between;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
   align-items: center;
   height: 50px;
   font-size: 0.8rem;
@@ -110,6 +173,8 @@ nav .nav-logo {
 }
 
 nav .nav-links {
+  display: -webkit-box;
+  display: -ms-flexbox;
   display: flex;
   gap: 1.5rem;
   list-style: none;
@@ -118,6 +183,8 @@ nav .nav-links {
 nav .nav-links a {
   color: var(--text-dim);
   text-decoration: none;
+  -webkit-transition: color 0.3s, text-shadow 0.3s;
+  -o-transition: color 0.3s, text-shadow 0.3s;
   transition: color 0.3s, text-shadow 0.3s;
   font-size: 0.75rem;
   letter-spacing: 1px;
@@ -151,7 +218,11 @@ nav .nav-links a::before {
   letter-spacing: 3px;
   text-transform: uppercase;
   margin-bottom: 0.5rem;
+  display: -webkit-box;
+  display: -ms-flexbox;
   display: flex;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
   align-items: center;
   gap: 0.5rem;
 }
@@ -173,12 +244,17 @@ nav .nav-links a::before {
 /* Fade-in on scroll */
 .fade-in {
   opacity: 0;
+  -webkit-transform: translateY(30px);
+  -ms-transform: translateY(30px);
   transform: translateY(30px);
+  -webkit-transition: opacity 0.8s ease, -webkit-transform 0.8s ease;
   transition: opacity 0.8s ease, transform 0.8s ease;
 }
 
 .fade-in.visible {
   opacity: 1;
+  -webkit-transform: translateY(0);
+  -ms-transform: translateY(0);
   transform: translateY(0);
 }
 
@@ -187,9 +263,18 @@ nav .nav-links a::before {
    ============================================ */
 #hero {
   min-height: 100vh;
+  display: -webkit-box;
+  display: -ms-flexbox;
   display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+  -ms-flex-direction: column;
   flex-direction: column;
+  -webkit-box-pack: center;
+  -ms-flex-pack: center;
   justify-content: center;
+  -webkit-box-align: start;
+  -ms-flex-align: start;
   align-items: flex-start;
   padding-top: 50px;
   max-width: 1000px;
@@ -212,12 +297,17 @@ nav .nav-links a::before {
 
 .boot-line {
   opacity: 0;
+  -webkit-transform: translateX(-10px);
+  -ms-transform: translateX(-10px);
   transform: translateX(-10px);
 }
 
 .boot-line.show {
   opacity: 1;
+  -webkit-transform: translateX(0);
+  -ms-transform: translateX(0);
   transform: translateX(0);
+  -webkit-transition: opacity 0.3s, -webkit-transform 0.3s;
   transition: opacity 0.3s, transform 0.3s;
 }
 
@@ -230,7 +320,12 @@ nav .nav-links a::before {
   opacity: 0;
 }
 
-.hero-title-wrap.show { opacity: 1; transition: opacity 0.5s; }
+.hero-title-wrap.show { 
+  opacity: 1; 
+  -webkit-transition: opacity 0.5s; 
+  -o-transition: opacity 0.5s; 
+  transition: opacity 0.5s; 
+}
 
 .hero-shell {
   font-size: 0.85rem;
@@ -240,6 +335,8 @@ nav .nav-links a::before {
 }
 
 .hero-title {
+  /* Fallback für clamp */
+  font-size: 3rem;
   font-size: clamp(2rem, 6vw, 4rem);
   font-weight: 700;
   color: var(--text-bright);
@@ -263,33 +360,53 @@ nav .nav-links a::before {
 }
 
 .hero-title .glitch::before {
+  -webkit-animation: glitch-1 3s infinite linear alternate-reverse;
   animation: glitch-1 3s infinite linear alternate-reverse;
   color: var(--cyan);
   z-index: -1;
+  -webkit-clip-path: inset(0 0 60% 0);
   clip-path: inset(0 0 60% 0);
 }
 
 .hero-title .glitch::after {
+  -webkit-animation: glitch-2 3s infinite linear alternate-reverse;
   animation: glitch-2 3s infinite linear alternate-reverse;
   color: var(--purple);
   z-index: -2;
+  -webkit-clip-path: inset(40% 0 0 0);
   clip-path: inset(40% 0 0 0);
 }
 
+@-webkit-keyframes glitch-1 {
+  0%, 90% { -webkit-transform: translate(0); transform: translate(0); }
+  91% { -webkit-transform: translate(-2px, -1px); transform: translate(-2px, -1px); }
+  92% { -webkit-transform: translate(2px, 1px); transform: translate(2px, 1px); }
+  93% { -webkit-transform: translate(-1px, 2px); transform: translate(-1px, 2px); }
+  94%, 100% { -webkit-transform: translate(0); transform: translate(0); }
+}
+
 @keyframes glitch-1 {
-  0%, 90% { transform: translate(0); }
-  91% { transform: translate(-2px, -1px); }
-  92% { transform: translate(2px, 1px); }
-  93% { transform: translate(-1px, 2px); }
-  94%, 100% { transform: translate(0); }
+  0%, 90% { -webkit-transform: translate(0); transform: translate(0); }
+  91% { -webkit-transform: translate(-2px, -1px); transform: translate(-2px, -1px); }
+  92% { -webkit-transform: translate(2px, 1px); transform: translate(2px, 1px); }
+  93% { -webkit-transform: translate(-1px, 2px); transform: translate(-1px, 2px); }
+  94%, 100% { -webkit-transform: translate(0); transform: translate(0); }
+}
+
+@-webkit-keyframes glitch-2 {
+  0%, 88% { -webkit-transform: translate(0); transform: translate(0); }
+  89% { -webkit-transform: translate(2px, 1px); transform: translate(2px, 1px); }
+  90% { -webkit-transform: translate(-2px, -1px); transform: translate(-2px, -1px); }
+  91% { -webkit-transform: translate(1px, -2px); transform: translate(1px, -2px); }
+  92%, 100% { -webkit-transform: translate(0); transform: translate(0); }
 }
 
 @keyframes glitch-2 {
-  0%, 88% { transform: translate(0); }
-  89% { transform: translate(2px, 1px); }
-  90% { transform: translate(-2px, -1px); }
-  91% { transform: translate(1px, -2px); }
-  92%, 100% { transform: translate(0); }
+  0%, 88% { -webkit-transform: translate(0); transform: translate(0); }
+  89% { -webkit-transform: translate(2px, 1px); transform: translate(2px, 1px); }
+  90% { -webkit-transform: translate(-2px, -1px); transform: translate(-2px, -1px); }
+  91% { -webkit-transform: translate(1px, -2px); transform: translate(1px, -2px); }
+  92%, 100% { -webkit-transform: translate(0); transform: translate(0); }
 }
 
 .hero-subtitle {
@@ -301,7 +418,10 @@ nav .nav-links a::before {
 }
 
 .hero-status {
+  display: -webkit-box;
+  display: -ms-flexbox;
   display: flex;
+  -ms-flex-wrap: wrap;
   flex-wrap: wrap;
   gap: 1.5rem;
   margin-top: 2rem;
@@ -309,10 +429,19 @@ nav .nav-links a::before {
   opacity: 0;
 }
 
-.hero-status.show { opacity: 1; transition: opacity 0.6s; }
+.hero-status.show { 
+  opacity: 1; 
+  -webkit-transition: opacity 0.6s; 
+  -o-transition: opacity 0.6s; 
+  transition: opacity 0.6s; 
+}
 
 .status-item {
+  display: -webkit-box;
+  display: -ms-flexbox;
   display: flex;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
   align-items: center;
   gap: 0.4rem;
   color: var(--text-dim);
@@ -323,8 +452,15 @@ nav .nav-links a::before {
   width: 6px; height: 6px;
   border-radius: 50%;
   background: var(--green);
+  -webkit-box-shadow: 0 0 6px var(--green);
   box-shadow: 0 0 6px var(--green);
+  -webkit-animation: pulse-dot 2s infinite;
   animation: pulse-dot 2s infinite;
+}
+
+@-webkit-keyframes pulse-dot {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
 }
 
 @keyframes pulse-dot {
@@ -332,7 +468,11 @@ nav .nav-links a::before {
   50% { opacity: 0.4; }
 }
 
-.status-dot.orange { background: var(--orange); box-shadow: 0 0 6px var(--orange); }
+.status-dot.orange { 
+  background: var(--orange); 
+  -webkit-box-shadow: 0 0 6px var(--orange); 
+  box-shadow: 0 0 6px var(--orange); 
+}
 
 .hero-prompt {
   margin-top: 3rem;
@@ -341,7 +481,12 @@ nav .nav-links a::before {
   opacity: 0;
 }
 
-.hero-prompt.show { opacity: 1; transition: opacity 0.5s; }
+.hero-prompt.show { 
+  opacity: 1; 
+  -webkit-transition: opacity 0.5s; 
+  -o-transition: opacity 0.5s; 
+  transition: opacity 0.5s; 
+}
 
 .hero-prompt .prompt-char { color: var(--green); }
 
@@ -351,7 +496,13 @@ nav .nav-links a::before {
   background: var(--cyan);
   margin-left: 2px;
   vertical-align: text-bottom;
+  -webkit-animation: blink 1s step-end infinite;
   animation: blink 1s step-end infinite;
+}
+
+@-webkit-keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
 }
 
 @keyframes blink {
@@ -372,7 +523,11 @@ nav .nav-links a::before {
 .terminal-header {
   background: var(--bg-tertiary);
   padding: 0.5rem 1rem;
+  display: -webkit-box;
+  display: -ms-flexbox;
   display: flex;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
   align-items: center;
   gap: 0.5rem;
   border-bottom: 1px solid var(--border);
@@ -413,18 +568,9 @@ nav .nav-links a::before {
   border-left: 2px solid var(--border);
 }
 
-.terminal-body .highlight {
-  color: var(--cyan);
-}
-
-.terminal-body .accent {
-  color: var(--orange);
-}
-
-.terminal-body .dim {
-  color: var(--text-dim);
-  font-style: italic;
-}
+.terminal-body .highlight { color: var(--cyan); }
+.terminal-body .accent { color: var(--orange); }
+.terminal-body .dim { color: var(--text-dim); font-style: italic; }
 
 /* ============================================
    PROJECT SECTION
@@ -442,9 +588,16 @@ nav .nav-links a::before {
   position: absolute;
   top: 0; left: 0; right: 0;
   height: 2px;
+  background: -webkit-gradient(linear, left top, right top, from(var(--cyan)), color-stop(var(--purple)), to(var(--cyan)));
   background: linear-gradient(90deg, var(--cyan), var(--purple), var(--cyan));
   background-size: 200% 100%;
+  -webkit-animation: gradient-shift 3s linear infinite;
   animation: gradient-shift 3s linear infinite;
+}
+
+@-webkit-keyframes gradient-shift {
+  0% { background-position: 0% 50%; }
+  100% { background-position: 200% 50%; }
 }
 
 @keyframes gradient-shift {
@@ -458,7 +611,11 @@ nav .nav-links a::before {
 }
 
 .project-badge {
+  display: -webkit-inline-box;
+  display: -ms-inline-flexbox;
   display: inline-flex;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
   align-items: center;
   gap: 0.4rem;
   background: rgba(255, 0, 64, 0.1);
@@ -485,9 +642,7 @@ nav .nav-links a::before {
   font-size: 0.82rem;
 }
 
-.project-body {
-  padding: 2rem;
-}
+.project-body { padding: 2rem; }
 
 .project-desc {
   font-size: 0.85rem;
@@ -497,6 +652,7 @@ nav .nav-links a::before {
 }
 
 .project-stats {
+  display: -ms-grid;
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
   gap: 1rem;
@@ -529,7 +685,10 @@ nav .nav-links a::before {
 }
 
 .project-stack {
+  display: -webkit-box;
+  display: -ms-flexbox;
   display: flex;
+  -ms-flex-wrap: wrap;
   flex-wrap: wrap;
   gap: 0.5rem;
 }
@@ -551,6 +710,7 @@ nav .nav-links a::before {
    STACK SECTION
    ============================================ */
 .stack-grid {
+  display: -ms-grid;
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   gap: 1.5rem;
@@ -561,11 +721,13 @@ nav .nav-links a::before {
   border: 1px solid var(--border);
   border-radius: 4px;
   padding: 1.5rem;
+  -webkit-transition: border-color 0.3s, -webkit-box-shadow 0.3s;
   transition: border-color 0.3s, box-shadow 0.3s;
 }
 
 .stack-group:hover {
   border-color: var(--cyan);
+  -webkit-box-shadow: var(--glow-cyan);
   box-shadow: var(--glow-cyan);
 }
 
@@ -585,7 +747,12 @@ nav .nav-links a::before {
 }
 
 .stack-items {
+  display: -webkit-box;
+  display: -ms-flexbox;
   display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+  -ms-flex-direction: column;
   flex-direction: column;
   gap: 0.6rem;
 }
@@ -593,9 +760,15 @@ nav .nav-links a::before {
 .stack-item {
   font-size: 0.8rem;
   color: var(--text);
+  display: -webkit-box;
+  display: -ms-flexbox;
   display: flex;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
   align-items: center;
   gap: 0.5rem;
+  -webkit-transition: color 0.3s;
+  -o-transition: color 0.3s;
   transition: color 0.3s;
 }
 
@@ -625,13 +798,18 @@ nav .nav-links a::before {
 .wf-line {
   margin-bottom: 0.8rem;
   opacity: 0;
+  -webkit-transform: translateX(-20px);
+  -ms-transform: translateX(-20px);
   transform: translateX(-20px);
+  -webkit-transition: opacity 0.5s ease, -webkit-transform 0.5s ease;
   transition: opacity 0.5s ease, transform 0.5s ease;
   line-height: 1.6;
 }
 
 .wf-line.visible {
   opacity: 1;
+  -webkit-transform: translateX(0);
+  -ms-transform: translateX(0);
   transform: translateX(0);
 }
 
@@ -655,6 +833,7 @@ nav .nav-links a::before {
   position: absolute;
   left: 0; top: 0; bottom: 0;
   width: 1px;
+  background: -webkit-gradient(linear, left top, left bottom, from(var(--cyan)), color-stop(var(--purple)), to(transparent));
   background: linear-gradient(to bottom, var(--cyan), var(--purple), transparent);
 }
 
@@ -672,6 +851,7 @@ nav .nav-links a::before {
   border: 2px solid var(--cyan);
   background: var(--bg);
   border-radius: 50%;
+  -webkit-box-shadow: var(--glow-cyan);
   box-shadow: var(--glow-cyan);
 }
 
@@ -719,14 +899,23 @@ nav .nav-links a::before {
 }
 
 .contact-links {
+  display: -webkit-box;
+  display: -ms-flexbox;
   display: flex;
+  -webkit-box-pack: center;
+  -ms-flex-pack: center;
   justify-content: center;
   gap: 2rem;
+  -ms-flex-wrap: wrap;
   flex-wrap: wrap;
 }
 
 .contact-link {
+  display: -webkit-inline-box;
+  display: -ms-inline-flexbox;
   display: inline-flex;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
   align-items: center;
   gap: 0.5rem;
   color: var(--text);
@@ -735,6 +924,8 @@ nav .nav-links a::before {
   padding: 0.6rem 1.5rem;
   border: 1px solid var(--border);
   border-radius: 2px;
+  -webkit-transition: all 0.3s;
+  -o-transition: all 0.3s;
   transition: all 0.3s;
   letter-spacing: 1px;
 }
@@ -742,6 +933,7 @@ nav .nav-links a::before {
 .contact-link:hover {
   color: var(--cyan);
   border-color: var(--cyan);
+  -webkit-box-shadow: var(--glow-cyan);
   box-shadow: var(--glow-cyan);
 }
 
@@ -790,11 +982,40 @@ footer {
   nav { padding: 0 1rem; }
   nav .nav-links { gap: 0.5rem; }
   .project-stats { grid-template-columns: 1fr 1fr; }
-  .hero-status { flex-direction: column; gap: 0.5rem; }
+  .hero-status { -webkit-box-orient: vertical; -webkit-box-direction: normal; -ms-flex-direction: column; flex-direction: column; gap: 0.5rem; }
 }
 </style>
+
+<!-- ============================================
+     PROGRESSIVE ENHANCEMENT (NO-JS FALLBACK)
+     ============================================ -->
+<noscript>
+  <style>
+    /* Elemente sichtbar machen, falls JS deaktiviert ist */
+    .fade-in { opacity: 1 !important; transform: none !important; }
+    .boot-sequence { opacity: 1 !important; }
+    .boot-line { opacity: 1 !important; transform: none !important; }
+    .hero-title-wrap { opacity: 1 !important; }
+    .hero-status { opacity: 1 !important; }
+    .hero-prompt { opacity: 1 !important; }
+    .wf-line { opacity: 1 !important; transform: none !important; }
+  </style>
+</noscript>
 </head>
 <body>
+
+<!-- ============================================
+     WEBP FALLBACK BEISPIEL (Picture-Element)
+     (Auskommentiert, da aktuell keine Bilder genutzt werden, 
+     dient als Vorlage für zukünftige Erweiterungen)
+     ============================================ -->
+<!--
+<picture style="display:none;">
+  <source srcset="assets/img/cyberpunk-bg.webp" type="image/webp">
+  <source srcset="assets/img/cyberpunk-bg.jpg" type="image/jpeg">
+  <img src="assets/img/cyberpunk-bg.jpg" alt="Cyberpunk Background" loading="lazy">
+</picture>
+-->
 
 <!-- Matrix Rain Background -->
 <canvas id="matrix-bg"></canvas>
@@ -1093,27 +1314,97 @@ footer {
 
 <!-- ===================== JAVASCRIPT ===================== -->
 <script>
+'use strict'; // Strict Mode aktiviert
+
+/**
+ * App-Architektur: Modularer Aufbau nach DRY-Prinzipien
+ * Type Safety via JSDoc
+ */
+const App = {
+  
+  /**
+   * Führt Module sicher aus (Error Handling)
+   * @param {string} moduleName - Name des Moduls für Logs
+   * @param {Function} fn - Auszuführende Funktion
+   */
+  runSafe: (moduleName, fn) => {
+    try {
+      fn();
+    } catch (error) {
+      console.error(`[App Error] Modul '${moduleName}' fehlgeschlagen:`, error);
+    }
+  },
+
+  /**
+   * Utility: Setzt sichere Cookies (SameSite & Secure Flag)
+   * @param {string} name - Cookie Name
+   * @param {string} value - Cookie Wert
+   * @param {number} days - Ablauf in Tagen
+   */
+  setSecureCookie: (name, value, days = 7) => {
+    try {
+      const date = new Date();
+      date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+      const expires = `expires=${date.toUTCString()}`;
+      // Nur über HTTPS (Secure) und Strict Mode (SameSite)
+      document.cookie = `${name}=${value};${expires};path=/;SameSite=Strict;Secure`;
+    } catch (error) {
+      console.error("[Cookie Error] Konnte Cookie nicht setzen:", error);
+    }
+  },
+
+  /**
+   * Utility: Generischer Intersection Observer
+   * @param {NodeListOf<Element>} elements - DOM Elemente
+   * @param {Function} callback - Callback bei Intersection
+   * @param {Object} options - Observer Optionen
+   */
+  observeElements: (elements, callback, options = { threshold: 0.15 }) => {
+    if (!('IntersectionObserver' in window)) {
+      // Fallback für alte Browser ohne IntersectionObserver
+      elements.forEach(el => callback(el, null));
+      return;
+    }
+    
+    const observer = new IntersectionObserver((entries, obs) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          callback(entry.target, obs);
+        }
+      });
+    }, options);
+    
+    elements.forEach(el => observer.observe(el));
+  }
+};
+
 /* ============================================
-   MATRIX RAIN BACKGROUND
+   MODULE DEFINITIONEN
    ============================================ */
-(function() {
+
+/**
+ * Modul: Matrix Rain Background
+ */
+const initMatrixRain = () => {
   const canvas = document.getElementById('matrix-bg');
+  if (!canvas) return;
+  
   const ctx = canvas.getContext('2d');
   let w, h, cols, drops;
   const chars = 'アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン0123456789ABCDEF';
 
-  function init() {
+  const resize = () => {
     w = canvas.width = window.innerWidth;
     h = canvas.height = window.innerHeight;
     const fontSize = 14;
     cols = Math.floor(w / fontSize);
     drops = Array(cols).fill(1);
-  }
+  };
 
-  init();
-  window.addEventListener('resize', init);
+  resize();
+  window.addEventListener('resize', resize);
 
-  function draw() {
+  const draw = () => {
     ctx.fillStyle = 'rgba(10, 10, 15, 0.05)';
     ctx.fillRect(0, 0, w, h);
     ctx.fillStyle = '#00fff0';
@@ -1127,20 +1418,22 @@ footer {
       }
       drops[i]++;
     }
-  }
+  };
 
   setInterval(draw, 50);
-})();
+};
 
-/* ============================================
-   BOOT SEQUENCE ANIMATION
-   ============================================ */
-(function() {
+/**
+ * Modul: Boot Sequence Animation
+ */
+const initBootSequence = () => {
   const boot = document.getElementById('boot');
   const lines = boot.querySelectorAll('.boot-line');
   const titleWrap = document.getElementById('hero-title-wrap');
   const status = document.getElementById('hero-status');
   const prompt = document.getElementById('hero-prompt');
+
+  if (!boot || lines.length === 0) return;
 
   boot.classList.add('active');
 
@@ -1152,97 +1445,100 @@ footer {
 
   const totalBootTime = 300 + lines.length * 250 + 500;
 
-  setTimeout(() => {
-    titleWrap.classList.add('show');
-  }, totalBootTime);
+  setTimeout(() => titleWrap?.classList.add('show'), totalBootTime);
+  setTimeout(() => status?.classList.add('show'), totalBootTime + 400);
+  setTimeout(() => prompt?.classList.add('show'), totalBootTime + 800);
+};
 
-  setTimeout(() => {
-    status.classList.add('show');
-  }, totalBootTime + 400);
+/**
+ * Modul: Scroll Fade-In
+ */
+const initScrollFade = () => {
+  const elements = document.querySelectorAll('.fade-in');
+  App.observeElements(elements, (target, observer) => {
+    target.classList.add('visible');
+    if (observer) observer.unobserve(target);
+  });
+};
 
-  setTimeout(() => {
-    prompt.classList.add('show');
-  }, totalBootTime + 800);
-})();
-
-/* ============================================
-   SCROLL FADE-IN
-   ============================================ */
-(function() {
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add('visible');
-      }
-    });
-  }, { threshold: 0.15 });
-
-  document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
-})();
-
-/* ============================================
-   COUNTER ANIMATION
-   ============================================ */
-(function() {
+/**
+ * Modul: Counter Animation
+ */
+const initCounters = () => {
   const counters = document.querySelectorAll('.counter');
-  const counterObserver = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        const el = entry.target;
-        const target = parseInt(el.getAttribute('data-target'));
-        let current = 0;
-        const increment = target / 40;
-        const timer = setInterval(() => {
-          current += increment;
-          if (current >= target) {
-            el.textContent = target;
-            clearInterval(timer);
-          } else {
-            el.textContent = Math.ceil(current);
-          }
-        }, 40);
-        counterObserver.unobserve(el);
+  
+  App.observeElements(counters, (target, observer) => {
+    const targetValue = parseInt(target.getAttribute('data-target'), 10);
+    if (isNaN(targetValue)) return;
+    
+    let current = 0;
+    const increment = targetValue / 40;
+    
+    const timer = setInterval(() => {
+      current += increment;
+      if (current >= targetValue) {
+        target.textContent = targetValue;
+        clearInterval(timer);
+      } else {
+        target.textContent = Math.ceil(current);
       }
-    });
+    }, 40);
+    
+    if (observer) observer.unobserve(target);
   }, { threshold: 0.5 });
+};
 
-  counters.forEach(c => counterObserver.observe(c));
-})();
-
-/* ============================================
-   WORKFLOW TERMINAL ANIMATION
-   ============================================ */
-(function() {
+/**
+ * Modul: Workflow Terminal Animation
+ */
+const initWorkflowTerminal = () => {
   const wfSection = document.getElementById('workflow-steps');
+  if (!wfSection) return;
+  
   const wfLines = wfSection.querySelectorAll('.wf-line');
 
-  const wfObserver = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        wfLines.forEach((line, i) => {
-          setTimeout(() => {
-            line.classList.add('visible');
-          }, i * 200);
-        });
-        wfObserver.unobserve(entry.target);
+  App.observeElements([wfSection], (target, observer) => {
+    wfLines.forEach((line, i) => {
+      setTimeout(() => {
+        line.classList.add('visible');
+      }, i * 200);
+    });
+    if (observer) observer.unobserve(target);
+  }, { threshold: 0.2 });
+};
+
+/**
+ * Modul: Smooth Scroll Navigation
+ */
+const initSmoothScroll = () => {
+  const anchors = document.querySelectorAll('nav a[href^="#"]');
+  anchors.forEach(anchor => {
+    anchor.addEventListener('click', (e) => {
+      e.preventDefault();
+      const targetId = anchor.getAttribute('href');
+      const targetElement = document.querySelector(targetId);
+      
+      if (targetElement) {
+        targetElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
       }
     });
-  }, { threshold: 0.2 });
-
-  wfObserver.observe(wfSection);
-})();
+  });
+};
 
 /* ============================================
-   SMOOTH SCROLL FOR NAV LINKS
+   APP INITIALISIERUNG
    ============================================ */
-document.querySelectorAll('nav a[href^="#"]').forEach(anchor => {
-  anchor.addEventListener('click', function(e) {
-    e.preventDefault();
-    const target = document.querySelector(this.getAttribute('href'));
-    if (target) {
-      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
-  });
+document.addEventListener('DOMContentLoaded', () => {
+  // Setze ein initiales sicheres Cookie als Best Practice
+  App.setSecureCookie('session_init', 'true', 1);
+
+  // Module sicher starten
+  App.runSafe('MatrixRain', initMatrixRain);
+  App.runSafe('BootSequence', initBootSequence);
+  App.runSafe('ScrollFade', initScrollFade);
+  App.runSafe('Counters', initCounters);
+  App.runSafe('WorkflowTerminal', initWorkflowTerminal);
+  App.runSafe('SmoothScroll', initSmoothScroll);
 });
 </script>
 </body>
